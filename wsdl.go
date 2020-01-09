@@ -2,6 +2,7 @@ package gosoap
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -183,6 +184,10 @@ func (c *Client) getWsdlBody() (reader io.ReadCloser, err error) {
 	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("wsdl request return status code %d", resp.StatusCode)
 	}
 
 	return resp.Body, nil
