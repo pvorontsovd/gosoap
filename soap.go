@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	"golang.org/x/net/html/charset"
 )
 
@@ -197,6 +198,17 @@ func (p *process) doRequest(url string) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	_, isBar := p.Request.Params["bar"]
+
+	if isBar {
+		bar := pb.Full.Start64(resp.ContentLength)
+		defer bar.Finish()
+
+		barReader := bar.NewProxyReader(resp.Body)
+
+		return ioutil.ReadAll(barReader)
+	}
 
 	return ioutil.ReadAll(resp.Body)
 }
